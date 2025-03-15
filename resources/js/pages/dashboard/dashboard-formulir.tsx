@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "@inertiajs/react";
 import axios from "axios";
 
 interface Formulir {
@@ -74,6 +75,7 @@ export default function DashboardFormulir() {
                             <th className="p-3 text-left">Email</th>
                             <th className="p-3 text-left">Nomor KTP</th>
                             <th className="p-3 text-left">Alamat</th>
+                            <th className="p-3 text-left">QR Code</th>
                             <th className="p-3 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -91,6 +93,15 @@ export default function DashboardFormulir() {
                                 <td className="p-3">{f.email}</td>
                                 <td className="p-3">{f.nik}</td>
                                 <td className="p-3">{f.alamat}</td>
+                                <td className="p-3">
+                                
+                                    <img
+                                        src={`/storage/qrcodes/${f.nik}.png`}
+                                        alt="QR Code"
+                                        className="w-16 h-16"
+                                    />
+                              
+                                </td>
                                 <td className="p-3 flex justify-center gap-2">
                                     <button 
                                         onClick={() => handleEdit(f.nik)} 
@@ -104,6 +115,12 @@ export default function DashboardFormulir() {
                                     >
                                         Hapus
                                     </button>
+                                    <Link
+                                    href={route("detail-kta-by-nik", { nik: f.nik })}
+                                    className="px-3 py-1 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition"
+                                    >
+                                        Detail
+                                    </Link>
                                 </td>
                             </tr>
                         ))}

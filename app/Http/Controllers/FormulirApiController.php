@@ -7,6 +7,7 @@ use App\Models\Formulir;
 use App\Exports\FormulirExport;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class FormulirApiController extends Controller
 {
@@ -25,6 +26,10 @@ class FormulirApiController extends Controller
         if ($request->hasFile('foto_ktp')) {
             $validated['foto_ktp'] = $request->file('foto_ktp')->store('uploads', 'public');
         }
+
+        $qrCodePath = 'qrcodes/' . $request->nik . '.png';
+        $qrCodeContent = route('detail-kta-by-nik', ['nik' => $request->nik]);
+        Storage::disk('public')->put($qrCodePath, QrCode::format('png')->size(200)->generate($qrCodeContent));
 
         
         $formulir = Formulir::create($validated);
@@ -85,6 +90,11 @@ class FormulirApiController extends Controller
         if ($formulir->foto_ktp) {
             Storage::disk('public')->delete($formulir->foto_ktp);
         }
+
+        $qr_code_path = 'qrcodes/'.$formulir->nik.'.png';
+
+        Storage::disk('public')->delete($qr_code_path);
+        
 
         $formulir->delete();
 
