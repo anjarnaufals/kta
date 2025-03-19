@@ -31,6 +31,10 @@ Route::get('detail-kta-by-nik/{nik}', function ($nik) {
     return Inertia::render('kta/detail-kta-by-nik', ['nik' => $nik]);
 })->name('detail-kta-by-nik');
 
+Route::get('wilayah', function () {
+    return Inertia::render('wilayah/wilayah');
+})->name('wilayah');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/api.php';
