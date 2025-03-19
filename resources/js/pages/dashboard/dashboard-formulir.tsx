@@ -61,11 +61,13 @@ export default function DashboardFormulir() {
     };
 
     return (
-        <div className="container mx-auto p-6">
-            <h2 className="text-2xl font-semibold mb-4">Dashboard Pendaftaran</h2>
-            <button onClick={handleExport} className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition">
+        <div className="container mx-auto m-16">
+            <h2 className="text-2xl font-semibold mb-4 text-center">Dashboard Pendaftaran</h2>
+
+            <button onClick={handleExport} className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition mb-6">
                 Export Excel
             </button>
+
             <div className="overflow-x-auto">
                 <table className="w-full border-collapse shadow-lg bg-white rounded-lg">
                     <thead>
