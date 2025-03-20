@@ -1,13 +1,13 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Formulir extends Model
+class Jabatan extends Model
 {
     use HasFactory;
-    protected $fillable = ['nama', 'email', 'nik', 'alamat', 'foto_ktp', 'qr_code'];
+
+    protected $fillable = ['nama', 'deskripsi'];
 }
-
-

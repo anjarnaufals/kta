@@ -14,11 +14,13 @@ export default function Formulir() {
         nik:"",
         alamat:"",
         foto_ktp: null as File | null,
+        foto_setengah_badan: null as File | null,
     });
 
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [message, setMessage] = useState("");
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const fileInputRefKtp = useRef<HTMLInputElement | null>(null);
+    const fileInputRefFotoSetengahBadan = useRef<HTMLInputElement | null>(null);
 
 
     const validateForm = () => {
@@ -29,6 +31,7 @@ export default function Formulir() {
         if (!data.nik.trim()) insideFormError.nik = "NIK tidak boleh kosong";
         if (!data.alamat.trim()) insideFormError.alamat = "Alamat tidak boleh kosong";
         if (!data.foto_ktp) insideFormError.foto_ktp = "Foto KTP wajib diunggah";
+        if (!data.foto_setengah_badan) insideFormError.foto_setengah_badan = "Foto Setengah Badan wajib diunggah";
 
         setFormErrors(insideFormError);
 
@@ -36,6 +39,7 @@ export default function Formulir() {
     };
 
     const [previewKTP, setPreviewKTP] = useState<string | null>(null);
+    const [previewSETENGAHBADAN, setpreviewSETENGAHBADAN] = useState<string | null>(null);
 
     const [provinsi, setProvinsi] = useState<Wilayah[]>([]);
     const [kabupaten, setKabupaten] = useState<Wilayah[]>([]);
@@ -57,7 +61,7 @@ export default function Formulir() {
         setData(fieldName, e.target.value);
     }
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChangeKTP = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
 
              // Validasi ukuran file (maksimal 2MB)
@@ -69,8 +73,8 @@ export default function Formulir() {
                 setFormErrors((prev) => ({ ...prev, foto_ktp: "Ukuran file maksimal 2MB" }));
                 setData({ ...data, foto_ktp: null });
                 setPreviewKTP(null);
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = ""; // Reset input file
+                if (fileInputRefKtp.current) {
+                    fileInputRefKtp.current.value = ""; // Reset input file
                 }
                 return;
             }
@@ -80,6 +84,32 @@ export default function Formulir() {
 
             setData({ ...data, foto_ktp: e.target.files[0] });
             setPreviewKTP(URL.createObjectURL(e.target.files[0])); 
+        }
+    };
+
+    const handleFileChangeFOTOSETENGAHBADAN = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+
+             // Validasi ukuran file (maksimal 2MB)
+            const maxSize = 2 * 1024 * 1024; // 2MB
+
+           
+
+            if (e.target.files[0].size > maxSize) {
+                setFormErrors((prev) => ({ ...prev, foto_setengah_badan: "Ukuran file maksimal 2MB" }));
+                setData({ ...data, foto_ktp: null });
+                setpreviewSETENGAHBADAN(null);
+                if (fileInputRefFotoSetengahBadan.current) {
+                    fileInputRefFotoSetengahBadan.current.value = ""; // Reset input file
+                }
+                return;
+            }
+
+            // Reset error jika valid
+            setFormErrors((prev) => ({ ...prev, foto_setengah_badan: "" }));
+
+            setData({ ...data, foto_setengah_badan: e.target.files[0] });
+            setpreviewSETENGAHBADAN(URL.createObjectURL(e.target.files[0])); 
         }
     };
 
@@ -159,6 +189,10 @@ export default function Formulir() {
             formDataToSend.append("foto_ktp", data.foto_ktp);
         }
 
+        if (data.foto_setengah_badan) {
+            formDataToSend.append("foto_setengah_badan", data.foto_setengah_badan);
+        }
+
 
         try {
             await axios.post("/formulir", formDataToSend, {
@@ -172,6 +206,7 @@ export default function Formulir() {
                 nik: "", 
                 alamat: "" , 
                 foto_ktp:null,
+                foto_setengah_badan:null,
             });
 
         } catch (error: any) {
@@ -186,12 +221,13 @@ export default function Formulir() {
     return (
         <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-md rounded-lg mb-16">
 
+            <h1 className="text-2xl font-semibold text-gray-700 mb-4 text-center">GRIB JAYA DPC KOTA SUKABUMI</h1>
             <h2 className="text-2xl font-semibold text-gray-700 mb-4 text-center">Formulir Pendaftaran</h2>
             {message && <p className="text-center text-red-500">{message}</p>}
 
             <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
                 <div>
-                    <label className="block text-gray-600 font-medium mb-1">Nama</label>
+                    <label className="block text-gray-600 font-medium mb-1">Nama<span className="text-red-500">*</span></label>
                     <input
                         type="text"
                         name="nama"
@@ -204,7 +240,7 @@ export default function Formulir() {
                 </div>
 
                 <div>
-                    <label className="block text-gray-600 font-medium mb-1">Email</label>
+                    <label className="block text-gray-600 font-medium mb-1">Email<span className="text-red-500">*</span></label>
                     <input
                         type="email"
                         name="email"
@@ -218,7 +254,7 @@ export default function Formulir() {
                 </div>
 
                 <div>
-                    <label className="block text-gray-600 font-medium mb-1">NIK</label>
+                    <label className="block text-gray-600 font-medium mb-1">NIK<span className="text-red-500">*</span></label>
                     <input
                         type="text"
                         name="nik"
@@ -231,7 +267,7 @@ export default function Formulir() {
                 </div>
 
                 <div>
-                    <label className="block text-gray-600 font-medium mb-1">Alamat</label>
+                    <label className="block text-gray-600 font-medium mb-1">Alamat<span className="text-red-500">*</span></label>
                     <textarea
                         name="alamat"
                         placeholder="Alamat Lengkap"
@@ -243,13 +279,13 @@ export default function Formulir() {
                 </div>
 
                 <div>
-                    <label className="block text-gray-600 font-medium mb-1">Upload Foto KTP (Max 2MB)</label>
+                    <label className="block text-gray-600 font-medium mb-1">Upload Foto KTP (Max 2MB)<span className="text-red-500">*</span></label>
                     <input
                         type="file"
                         name="foto_ktp"
                         accept="image/*"
-                        onChange={handleFileChange}
-                        ref={fileInputRef}
+                        onChange={handleFileChangeKTP}
+                        ref={fileInputRefKtp}
                         className="w-full border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 file:bg-green-500 file:px-4 file:py-2 file:text-white file:mr-4"
                     />
                     {formErrors.foto_ktp && <p className="text-red-500 text-sm">{formErrors.foto_ktp}</p>}
@@ -258,88 +294,31 @@ export default function Formulir() {
                 {previewKTP && (
                     <div className="mt-4 mb-4">
                         <p className="text-sm text-gray-600">Preview KTP</p>
-                        <img src={previewKTP} alt="Preview KTP" className="mt-2 h-80 rounded-lg border w-full object-cover md:object-cover" />
+                        <img src={previewKTP} alt="Preview KTP" className="mt-2 h-80 rounded-lg border w-full object-cover md:object-contain" />
+                    </div>
+                )}
+
+                <div>
+                    <label className="block text-gray-600 font-medium mb-1 mt-4">Upload Foto Setengah Badan (Max 2MB)<span className="text-red-500">*</span></label>
+                    <input
+                        type="file"
+                        name="foto_setengah_badan"
+                        accept="image/*"
+                        onChange={handleFileChangeFOTOSETENGAHBADAN}
+                        ref={fileInputRefFotoSetengahBadan}
+                        className="w-full border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 file:bg-green-500 file:px-4 file:py-2 file:text-white file:mr-4"
+                    />
+                    {formErrors.foto_setengah_badan && <p className="text-red-500 text-sm">{formErrors.foto_setengah_badan}</p>}
+                </div>
+
+                {previewSETENGAHBADAN && (
+                    <div className="mt-4 mb-4">
+                        <p className="text-sm text-gray-600">Preview Foto Setengah Badan</p>
+                        <img src={previewSETENGAHBADAN} alt="Preview KTP" className="mt-2 h-80 rounded-lg border w-full md:object-contain" />
                     </div>
                 )}
 
                 
-                {/* Provinsi */}
-                <div className="mb-4">
-                    <label className="block text-gray-600 font-medium mb-1">Provinsi</label>
-                    <select
-                    value={selectedProvinsi}
-                    onChange={(e) => setSelectedProvinsi(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300"
-                    >
-                    <option value="">-- Pilih Provinsi --</option>
-                    {provinsi.map((prov) => (
-                        <option key={prov.id} value={prov.id}>
-                        {prov.nama}
-                        </option>
-                    ))}
-                    </select>
-                </div>
-
-                {/* Kabupaten/Kota */}
-                <div className="mb-4">
-                    <label className="block text-gray-600 font-medium mb-1">Kabupaten/Kota</label>
-                    <select
-                    value={selectedKabupaten}
-                    onChange={(e) => setSelectedKabupaten(e.target.value)}
-                    disabled={!selectedProvinsi}
-                    className={`w-full px-3 py-2 border rounded-lg ${
-                        selectedProvinsi ? "focus:ring focus:ring-blue-300" : "bg-gray-100 cursor-not-allowed"
-                    }`}
-                    >
-                    <option value="">-- Pilih Kabupaten/Kota --</option>
-                    {kabupaten.map((kab) => (
-                        <option key={kab.id} value={kab.id}>
-                        {kab.nama}
-                        </option>
-                    ))}
-                    </select>
-                </div>
-
-                {/* Kecamatan */}
-                <div className="mb-4">
-                    <label className="block text-gray-600 font-medium mb-1">Kecamatan</label>
-                    <select
-                    value={selectedKecamatan}
-                    onChange={(e) => setSelectedKecamatan(e.target.value)}
-                    disabled={!selectedKabupaten}
-                    className={`w-full px-3 py-2 border rounded-lg ${
-                        selectedKabupaten ? "focus:ring focus:ring-blue-300" : "bg-gray-100 cursor-not-allowed"
-                    }`}
-                    >
-                    <option value="">-- Pilih Kecamatan --</option>
-                    {kecamatan.map((kec) => (
-                        <option key={kec.id} value={kec.id}>
-                        {kec.nama}
-                        </option>
-                    ))}
-                    </select>
-                </div>
-
-                {/* Kelurahan/Desa */}
-                <div className="mb-4">
-                    <label className="block text-gray-600 font-medium mb-1">Kelurahan/Desa</label>
-                    <select
-                    value={selectedKelurahan}
-                    onChange={(e) => setSelectedKelurahan(e.target.value)}
-                    disabled={!selectedKecamatan}
-                    className={`w-full px-3 py-2 border rounded-lg ${
-                        selectedKecamatan ? "focus:ring focus:ring-blue-300" : "bg-gray-100 cursor-not-allowed"
-                    }`}
-                    >
-                    <option value="">-- Pilih Kelurahan/Desa --</option>
-                    {kelurahan.map((kel) => (
-                        <option key={kel.id} value={kel.id}>
-                        {kel.nama}
-                        </option>
-                    ))}
-                    </select>
-                </div>
-                    
                 <button
                     type="submit"
                     className="w-full bg-blue-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200 mt-6 mb-2">

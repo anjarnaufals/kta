@@ -9,6 +9,7 @@ interface Formulir {
     nik: number;
     alamat: string;
     foto_ktp: string;
+    qr_code: string;
 }   
 
 export default function DashboardFormulir() {
@@ -36,15 +37,6 @@ export default function DashboardFormulir() {
 
     const handleExport = async () => {
         try {
-            // const response = await fetch("formulir/export");
-            // const blob = await response.blob();
-            // const url = window.URL.createObjectURL(blob);
-            // const a = document.createElement("a");
-            // a.href = url;
-            // a.download = "formulir.xlsx";
-            // document.body.appendChild(a);
-            // a.click();
-            // document.body.removeChild(a);
             const response = await axios.get("/formulir-export", {
                 responseType: "blob", 
             });
@@ -98,7 +90,7 @@ export default function DashboardFormulir() {
                                 <td className="p-3">
                                 
                                     <img
-                                        src={`/storage/qrcodes/${f.nik}.png`}
+                                        src={`/storage/${f.qr_code}`}
                                         alt="QR Code"
                                         className="w-16 h-16"
                                     />

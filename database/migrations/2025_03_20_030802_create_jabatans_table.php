@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('formulirs', function (Blueprint $table) {
+        Schema::create('jabatans', function (Blueprint $table) {
             $table->id();
+            $table->string('nama')->unique(); // Nama jabatan
+            $table->text('deskripsi')->nullable(); // Deskripsi opsional
             $table->timestamps();
-            $table->string('nama');
-            $table->string('email')->unique();
-            $table->string('nik', 16)->unique();
-            $table->text('alamat')->nullable();
-            $table->string('foto_ktp')->nullable();
-            $table->string('qr_code')->nullable();
         });
     }
 
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('formulirs');
+        Schema::dropIfExists('jabatans');
     }
 };

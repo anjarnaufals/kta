@@ -71,7 +71,7 @@ class FormulirExport extends \PhpOffice\PhpSpreadsheet\Cell\StringValueBinder  i
                 $drawing = new Drawing();
                 $drawing->setName('QR CODE');
                 $drawing->setDescription('QR CODE');
-                $drawing->setPath(storage_path('app/public/qrcodes/'.$formulir->nik.'.png')); // Ambil gambar dari storage
+                $drawing->setPath(storage_path('app/public/'.$formulir->qr_code)); // Ambil gambar dari storage
                 $drawing->setHeight(100);
                 $drawing->setCoordinates('G' . ($index + 2)); 
                 $drawings[] = $drawing;

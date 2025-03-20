@@ -123,6 +123,84 @@ export default function Formulir() {
             <h2 className="text-2xl font-semibold text-gray-700 mb-4 text-center">DPC KOTA SUKABUMI</h2>
 
             <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
+
+                    
+{/* Provinsi */}
+<div className="mb-4">
+                    <label className="block text-gray-600 font-medium mb-1">Provinsi</label>
+                    <select
+                    value={selectedProvinsi}
+                    onChange={(e) => setSelectedProvinsi(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300"
+                    >
+                    <option value="">-- Pilih Provinsi --</option>
+                    {provinsi.map((prov) => (
+                        <option key={prov.id} value={prov.id}>
+                        {prov.nama}
+                        </option>
+                    ))}
+                    </select>
+                </div>
+
+                {/* Kabupaten/Kota */}
+                <div className="mb-4">
+                    <label className="block text-gray-600 font-medium mb-1">Kabupaten/Kota</label>
+                    <select
+                    value={selectedKabupaten}
+                    onChange={(e) => setSelectedKabupaten(e.target.value)}
+                    disabled={!selectedProvinsi}
+                    className={`w-full px-3 py-2 border rounded-lg ${
+                        selectedProvinsi ? "focus:ring focus:ring-blue-300" : "bg-gray-100 cursor-not-allowed"
+                    }`}
+                    >
+                    <option value="">-- Pilih Kabupaten/Kota --</option>
+                    {kabupaten.map((kab) => (
+                        <option key={kab.id} value={kab.id}>
+                        {kab.nama}
+                        </option>
+                    ))}
+                    </select>
+                </div>
+
+                {/* Kecamatan */}
+                <div className="mb-4">
+                    <label className="block text-gray-600 font-medium mb-1">Kecamatan</label>
+                    <select
+                    value={selectedKecamatan}
+                    onChange={(e) => setSelectedKecamatan(e.target.value)}
+                    disabled={!selectedKabupaten}
+                    className={`w-full px-3 py-2 border rounded-lg ${
+                        selectedKabupaten ? "focus:ring focus:ring-blue-300" : "bg-gray-100 cursor-not-allowed"
+                    }`}
+                    >
+                    <option value="">-- Pilih Kecamatan --</option>
+                    {kecamatan.map((kec) => (
+                        <option key={kec.id} value={kec.id}>
+                        {kec.nama}
+                        </option>
+                    ))}
+                    </select>
+                </div>
+
+                {/* Kelurahan/Desa */}
+                <div className="mb-4">
+                    <label className="block text-gray-600 font-medium mb-1">Kelurahan/Desa</label>
+                    <select
+                    value={selectedKelurahan}
+                    onChange={(e) => setSelectedKelurahan(e.target.value)}
+                    disabled={!selectedKecamatan}
+                    className={`w-full px-3 py-2 border rounded-lg ${
+                        selectedKecamatan ? "focus:ring focus:ring-blue-300" : "bg-gray-100 cursor-not-allowed"
+                    }`}
+                    >
+                    <option value="">-- Pilih Kelurahan/Desa --</option>
+                    {kelurahan.map((kel) => (
+                        <option key={kel.id} value={kel.id}>
+                        {kel.nama}
+                        </option>
+                    ))}
+                    </select>
+                </div>
                 
                 
 

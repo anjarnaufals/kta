@@ -24,12 +24,17 @@ class FormulirApiController extends Controller
         ]);
 
         if ($request->hasFile('foto_ktp')) {
-            $validated['foto_ktp'] = $request->file('foto_ktp')->store('uploads', 'public');
+            $nik = $validated['nik']; // Ambil NIK dari inputan
+            $filename = "ktp_{$nik}_img." . $request->file('foto_ktp')->getClientOriginalExtension();
+
+            $validated['foto_ktp'] = $request->file('foto_ktp')->storeAs('uploads', $filename, 'public');
         }
 
-        $qrCodePath = 'qrcodes/' . $request->nik . '.png';
+        $qrCodePath = 'qrcodes/qrcode_' . $request->nik . '_img.png';
         $qrCodeContent = route('detail-kta-by-nik', ['nik' => $request->nik]);
+
         Storage::disk('public')->put($qrCodePath, QrCode::format('png')->size(200)->generate($qrCodeContent));
+        $validated['qr_code']=$qrCodePath;
 
         
         $formulir = Formulir::create($validated);
