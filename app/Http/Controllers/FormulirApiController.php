@@ -8,6 +8,7 @@ use App\Exports\FormulirExport;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Ramsey\Uuid\Uuid;
 
 class FormulirApiController extends Controller
 {
@@ -19,18 +20,29 @@ class FormulirApiController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:formulirs,email',
             'nik' => 'required|digits:16|unique:formulirs,nik',
-            'alamat' => 'nullable|string',
-            'foto_ktp' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'alamat' => 'required|string',
+            'foto_ktp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'foto_setengah_badan' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($request->hasFile('foto_ktp')) {
-            $nik = $validated['nik']; // Ambil NIK dari inputan
-            $filename = "ktp_{$nik}_img." . $request->file('foto_ktp')->getClientOriginalExtension();
-
+            $ktpUUID = Uuid::uuid4();
+            $nik = $validated['nik'];
+            $filename = "ktp_{$ktpUUID}_img." . $request->file('foto_ktp')->getClientOriginalExtension();
+            // $filename = "ktp_{$nik}_img." . $request->file('foto_ktp')->getClientOriginalExtension();
             $validated['foto_ktp'] = $request->file('foto_ktp')->storeAs('uploads', $filename, 'public');
         }
 
-        $qrCodePath = 'qrcodes/qrcode_' . $request->nik . '_img.png';
+        if ($request->hasFile('foto_setengah_badan')) {
+            $fsbUUID = Uuid::uuid4();
+            $nik = $validated['nik'];
+            $filename = "fsb_{$fsbUUID}_img." . $request->file('foto_setengah_badan')->getClientOriginalExtension();
+            $validated['foto_setengah_badan'] = $request->file('foto_setengah_badan')->storeAs('uploads', $filename, 'public');
+        }
+
+        $qrCodeUUID = Uuid::uuid4();
+        $qrCodePath = 'qrcodes/qrcode_' . $qrCodeUUID . '_img.png';
+        // $qrCodePath = 'qrcodes/qrcode_' . $request->nik . '_img.png';
         $qrCodeContent = route('detail-kta-by-nik', ['nik' => $request->nik]);
 
         Storage::disk('public')->put($qrCodePath, QrCode::format('png')->size(200)->generate($qrCodeContent));

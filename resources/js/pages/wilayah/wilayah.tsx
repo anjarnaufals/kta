@@ -125,8 +125,8 @@ export default function Formulir() {
             <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
 
                     
-{/* Provinsi */}
-<div className="mb-4">
+                {/* Provinsi */}
+                <div className="mb-4">
                     <label className="block text-gray-600 font-medium mb-1">Provinsi</label>
                     <select
                     value={selectedProvinsi}

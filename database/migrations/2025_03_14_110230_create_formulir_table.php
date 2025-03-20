@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('alamat')->nullable();
             $table->string('foto_ktp')->nullable();
             $table->string('qr_code')->nullable();
+            $table->string('foto_setengah_badan')->nullable();
         });
     }
 

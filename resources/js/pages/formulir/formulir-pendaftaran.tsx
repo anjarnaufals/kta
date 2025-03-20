@@ -7,6 +7,11 @@ interface Wilayah {
     nama: string;
   }
 
+interface Jabatan {
+    id: string;
+    nama: string;
+  }
+
 export default function Formulir() {
     const { data, setData } = useForm({
         nama: "",
@@ -41,20 +46,18 @@ export default function Formulir() {
     const [previewKTP, setPreviewKTP] = useState<string | null>(null);
     const [previewSETENGAHBADAN, setpreviewSETENGAHBADAN] = useState<string | null>(null);
 
-    const [provinsi, setProvinsi] = useState<Wilayah[]>([]);
-    const [kabupaten, setKabupaten] = useState<Wilayah[]>([]);
-    const [kecamatan, setKecamatan] = useState<Wilayah[]>([]);
-    const [kelurahan, setKelurahan] = useState<Wilayah[]>([]);
-  
-    const [selectedProvinsi, setSelectedProvinsi] = useState('');
-    const [selectedKabupaten, setSelectedKabupaten] = useState('');
-    const [selectedKecamatan, setSelectedKecamatan] = useState('');
-    const [selectedKelurahan, setSelectedKelurahan] = useState('');
+    const [kecByKotaSukabumi, setKecByKotaSukabumi] = useState<Wilayah[]>([]);
+    const [kelByKecKotaSukabumi, setKelByKecKotaSukabumi] = useState<Wilayah[]>([]);
+    const [selectedKecByKotaSukabumi, setSelectedKecByKotaSukabumi] = useState('');
+    const [selectedKelByKecKotaSukabumi, setSelectedKelByKecKotaSukabumi] = useState('');
+    const [namaKecTerpiih, setNamaKec] = useState('');
+    const [namaKelTerpiih, setNamaKel] = useState('');
+
+    const [jabatanList, setListJabatan] = useState<Jabatan[]>([]);
+    const [jabatanSelected, setJabatanSelected] = useState('');
+    const [jabatanNamaSelected, setJabatanNamaSelected] = useState('');
 
 
-    // const handleChange = (e: { target: { name: any; value: any; }; }) => {
-    //     setData(e.target.name, e.target.value);
-    // };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const fieldName = e.target.name as keyof typeof data; // 👈 Konversi name ke tipe yang benar
@@ -113,11 +116,11 @@ export default function Formulir() {
         }
     };
 
-    // Ambil data provinsi saat pertama kali halaman dimuat
+    // Ambil kecamatan berdasarkan kota sukabumi
     useEffect(() => {
-        axios.get(`/provinsi`)
+        axios.get(`/jabatan`)
         .then((response) => {
-            setProvinsi(response.data);
+            setListJabatan(response.data);
         })
         .catch(() => {
         })
@@ -125,47 +128,31 @@ export default function Formulir() {
         });
     }, []);
 
-    // Ambil kabupaten berdasarkan provinsi yang dipilih
+    // Ambil kecamatan berdasarkan kota sukabumi
     useEffect(() => {
-        if (selectedProvinsi) {
-            axios.get(`/kabupaten/${selectedProvinsi}`)
-            .then((response) => {
-                setKabupaten(response.data);
-            })
-            .catch(() => {
-            })
-            .finally(() => {
-            });
-        }
-    }, [selectedProvinsi]);
+        axios.get(`/kecamatan/180`)
+        .then((response) => {
+            setKecByKotaSukabumi(response.data);
+        })
+        .catch(() => {
+        })
+        .finally(() => {
+        });
+    }, []);
 
-    // Ambil kecamatan berdasarkan kabupaten yang dipilih
+    // Ambil kelurahan berdasarkan kecamatan yang dipilih dalam kota sukabumi
     useEffect(() => {
-        if (selectedKabupaten) {
-            axios.get(`/kecamatan/${selectedKabupaten}`)
+        if (selectedKecByKotaSukabumi) {
+            axios.get(`/kelurahan/${selectedKecByKotaSukabumi}`)
             .then((response) => {
-                setKecamatan(response.data);
+                setKelByKecKotaSukabumi(response.data);
             })
             .catch(() => {
             })
             .finally(() => {
             });
         }
-    }, [selectedKabupaten]);
-
-    // Ambil kelurahan berdasarkan kecamatan yang dipilih
-    useEffect(() => {
-        if (selectedKecamatan) {
-            axios.get(`/kelurahan/${selectedKecamatan}`)
-            .then((response) => {
-                setKelurahan(response.data);
-            })
-            .catch(() => {
-            })
-            .finally(() => {
-            });
-        }
-    }, [selectedKecamatan]);
+    }, [selectedKecByKotaSukabumi]);
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -209,6 +196,17 @@ export default function Formulir() {
                 foto_setengah_badan:null,
             });
 
+            setPreviewKTP(null);
+            setpreviewSETENGAHBADAN(null);
+
+            if (fileInputRefFotoSetengahBadan.current) {
+                fileInputRefFotoSetengahBadan.current.value = ""; 
+            }
+
+            if (fileInputRefKtp.current) {
+                fileInputRefKtp.current.value = ""; 
+            }
+
         } catch (error: any) {
             if (error.response) {
                 setMessage(JSON.stringify(error.response.data));
@@ -222,7 +220,7 @@ export default function Formulir() {
         <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-md rounded-lg mb-16">
 
             <h1 className="text-2xl font-semibold text-gray-700 mb-4 text-center">GRIB JAYA DPC KOTA SUKABUMI</h1>
-            <h2 className="text-2xl font-semibold text-gray-700 mb-4 text-center">Formulir Pendaftaran</h2>
+            <h4 className="text-2xl font-semibold text-gray-600 mb-4 text-center">Formulir Pendaftaran</h4>
             {message && <p className="text-center text-red-500">{message}</p>}
 
             <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
@@ -276,6 +274,78 @@ export default function Formulir() {
                         className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     ></textarea>
                     {formErrors.alamat && <p className="text-red-500 text-sm">{formErrors.alamat}</p>}
+                </div>
+
+               
+
+                {/* Kecamatan berdasarkan kota sukabumi */}
+                <div className="mb-4">
+                    <label className="block text-gray-600 font-medium mb-1">PAC (Kecamatan)</label>
+                    <select
+                    value={selectedKecByKotaSukabumi}
+                    onChange={(e) => {
+                        setSelectedKecByKotaSukabumi(e.target.value);
+                        const selected = kecByKotaSukabumi.find((p) => String(p.id) === e.target.value);
+                        setNamaKec(selected?.nama ?? '');
+                    } } 
+                   
+                    className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300"
+                    >
+                    <option value="">-- Pilih PAC --</option>
+                    {kecByKotaSukabumi.map((kec) => (
+                        <option key={kec.id} value={kec.id}>
+                        {kec.nama}
+                        </option>
+                    ))}
+                    </select>
+                </div>
+
+                {/* Kelurahan/Desa berdasarkan salah satu kecamatan di kota sukabumi*/}
+                <div className="mb-4">
+                    <label className="block text-gray-600 font-medium mb-1">RANTING (Kelurahan)</label>
+                    <select
+                    value={selectedKelByKecKotaSukabumi}
+                    onChange={(e) => {
+                        setSelectedKelByKecKotaSukabumi(e.target.value);
+                        const selected = kelByKecKotaSukabumi.find((p) => String(p.id) === e.target.value);
+                        setNamaKel(selected?.nama ?? '');
+                    }}
+                    disabled={!selectedKecByKotaSukabumi}
+                    className={`w-full px-3 py-2 border rounded-lg ${
+                        selectedKecByKotaSukabumi ? "focus:ring focus:ring-blue-300" : "bg-gray-100 cursor-not-allowed"
+                    }`}
+                    >
+                    <option value="">-- Pilih RANTING --</option>
+                    {kelByKecKotaSukabumi.map((kel) => (
+                        <option key={kel.id} value={kel.id}>
+                        {kel.nama}
+                        </option>
+                    ))}
+                    </select>
+                </div>
+
+                {namaKecTerpiih && namaKelTerpiih && <p className="text-center text-black-500 font-bold">DPC KOTA SUKABUMI, PAC {namaKecTerpiih}, RANTING {namaKelTerpiih}</p>}
+
+                 {/* Jabatan */}
+                 <div className="mb-4">
+                    <label className="block text-gray-600 font-medium mb-1">Pilih Jabatan</label>
+                    <select
+                    value={jabatanSelected}
+                    onChange={(e) => {
+                        setJabatanSelected(e.target.value);
+                        const selected = jabatanList.find((p) => String(p.id) === e.target.value);
+                        setJabatanNamaSelected(selected?.nama ?? '');
+                    } } 
+                   
+                    className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300"
+                    >
+                    <option value="">-- Pilih Jabatan --</option>
+                    {jabatanList.map((jabatan) => (
+                        <option key={jabatan.id} value={jabatan.id}>
+                        {jabatan.nama}
+                        </option>
+                    ))}
+                    </select>
                 </div>
 
                 <div>

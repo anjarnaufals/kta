@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Formulir extends Model
 {
     use HasFactory;
-    protected $fillable = ['nama', 'email', 'nik', 'alamat', 'foto_ktp', 'qr_code'];
+    protected $fillable = ['nama', 'email', 'nik', 'alamat', 'foto_ktp', 'qr_code', 'foto_setengah_badan'];
 }
 
 
